@@ -1,6 +1,4 @@
-
 package com.crio.warmup.stock;
-
 
 import com.crio.warmup.stock.dto.AnnualizedReturn;
 import com.crio.warmup.stock.dto.PortfolioTrade;
@@ -14,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -44,8 +43,18 @@ public class PortfolioManagerApplication {
   //  There can be few unused imports, you will need to fix them to make the build pass.
 
   public static List<String> mainReadFile(String[] args) throws IOException, URISyntaxException {
+    
+    File fil = resolveFileFromResources(args[0]);
+    ObjectMapper ob = getObjectMapper();
+    PortfolioTrade []obj = ob.readValue(fil, PortfolioTrade[].class);
+    List<String> sym = new ArrayList<String>();
+    
+    for (PortfolioTrade str:obj) { 
+      sym.add(str.getSymbol());
+    }
 
-     return Collections.emptyList();
+    return sym;
+
   }
 
 
@@ -103,11 +112,12 @@ public class PortfolioManagerApplication {
 
   public static List<String> debugOutputs() {
 
-     String valueOfArgument0 = "trades.json";
-     String resultOfResolveFilePathArgs0 = "";
-     String toStringOfObjectMapper = "";
-     String functionNameFromTestFileInStackTrace = "";
-     String lineNumberFromTestFileInStackTrace = "";
+    String valueOfArgument0 = "trades.json";
+    String resultOfResolveFilePathArgs0 = "/home/crio-user/workspace/sidk721567-ME_QMONEY"
+        + "/qmoney/bin/main/trades.json";
+    String toStringOfObjectMapper = "com.fasterxml.jackson.databind.ObjectMapper@46944ca9";
+    String functionNameFromTestFileInStackTrace = "PortfolioManagerApplicationTest.java";
+    String lineNumberFromTestFileInStackTrace = "22:1";
 
 
     return Arrays.asList(new String[]{valueOfArgument0, resultOfResolveFilePathArgs0,
@@ -121,11 +131,8 @@ public class PortfolioManagerApplication {
   public static void main(String[] args) throws Exception {
     Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
     ThreadContext.put("runId", UUID.randomUUID().toString());
-
     printJsonObject(mainReadFile(args));
-
-
-
   }
 }
+
 
