@@ -46,10 +46,9 @@ public class PortfolioManagerApplication {
 
     File file = resolveFileFromResources(args[0]);
     byte[] byteArray = Files.readAllBytes(file.toPath());
-    String content = new String(byteArray);
-
+    
     ObjectMapper ob = getObjectMapper();
-    PortfolioTrade[] trade = ob.readValue(content, PortfolioTrade[].class);
+    PortfolioTrade[] trade = ob.readValue(byteArray, PortfolioTrade[].class);
 
     List<String> symbols = new ArrayList<>();
     for (int i = 0; i < trade.length; i++) {
@@ -152,14 +151,13 @@ public class PortfolioManagerApplication {
     File file = resolveFileFromResources(args[0]);
     LocalDate endDate = LocalDate.parse(args[1]);
     byte[] byteArray = Files.readAllBytes(file.toPath());
-    String content = new String(byteArray);
     ObjectMapper objectMapper = getObjectMapper();
-    PortfolioTrade[] portfolioTrades = objectMapper.readValue(content, PortfolioTrade[].class);
+    PortfolioTrade[] portfolioTrades = objectMapper.readValue(byteArray, PortfolioTrade[].class);
 
     String token = "fa8fe0868cd058391fca9559e930a134b47c87ef";
     String uri = "https://api.tiingo.com/tiingo/daily/$SYMBOL/prices?startDate=$STARTDATE&endDate=$ENDDATE&token=$APIKEY";
 
-    List<TotalReturnsDto> totalReturnsDtoList = new ArrayList<>();
+    List<TotalReturnsDto> totalReturnsDtoList = new ArrayList<TotalReturnsDto>();
 
     for (PortfolioTrade portfolioTrade : portfolioTrades) {
       String url = uri.replace("$APIKEY", token)
