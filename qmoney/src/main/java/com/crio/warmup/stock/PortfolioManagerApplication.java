@@ -25,7 +25,7 @@ import org.apache.logging.log4j.ThreadContext;
 import org.springframework.web.client.RestTemplate;
 
 public class PortfolioManagerApplication {
-
+  private static List<TotalReturnsDto> totalReturnsDtoList;
   // TODO: CRIO_TASK_MODULE_JSON_PARSING
   // Read the json file provided in the argument[0]. The file will be avilable in
   // the classpath.
@@ -46,7 +46,7 @@ public class PortfolioManagerApplication {
 
     File file = resolveFileFromResources(args[0]);
     byte[] byteArray = Files.readAllBytes(file.toPath());
-    
+
     ObjectMapper ob = getObjectMapper();
     PortfolioTrade[] trade = ob.readValue(byteArray, PortfolioTrade[].class);
 
@@ -66,8 +66,8 @@ public class PortfolioManagerApplication {
   }
 
   private static File resolveFileFromResources(String filename) throws URISyntaxException {
-    return Paths.get(Thread.currentThread().getContextClassLoader()
-            .getResource(filename).toURI()).toFile();
+    return Paths.get(Thread.currentThread()
+    .getContextClassLoader().getResource(filename).toURI()).toFile();
   }
 
   private static ObjectMapper getObjectMapper() {
@@ -157,16 +157,14 @@ public class PortfolioManagerApplication {
     String token = "fa8fe0868cd058391fca9559e930a134b47c87ef";
     String uri = "https://api.tiingo.com/tiingo/daily/$SYMBOL/prices?startDate=$STARTDATE&endDate=$ENDDATE&token=$APIKEY";
 
-    List<TotalReturnsDto> totalReturnsDtoList = new ArrayList<TotalReturnsDto>();
-
+    totalReturnsDtoList = new ArrayList<TotalReturnsDto>();
     for (PortfolioTrade portfolioTrade : portfolioTrades) {
       String url = uri.replace("$APIKEY", token)
           .replace("$SYMBOL", portfolioTrade.getSymbol())
           .replace("$STARTDATE", portfolioTrade.getPurchaseDate().toString())
           .replace("$ENDDATE", endDate.toString());
 
-      TiingoCandle[] tiingoCandles = new RestTemplate()
-          .getForObject(url, TiingoCandle[].class);
+      TiingoCandle[] tiingoCandles = new RestTemplate().getForObject(url, TiingoCandle[].class);
 
       TotalReturnsDto totalReturn = new TotalReturnsDto(portfolioTrade.getSymbol(),
           Stream.of(tiingoCandles).filter(candle -> candle.getDate()
@@ -176,18 +174,17 @@ public class PortfolioManagerApplication {
     totalReturnsDtoList.sort(Comparator.comparing(TotalReturnsDto::getClosingPrice));
 
     return Arrays.stream(portfolioTrades).map(trade -> {
-      String url = uri.replace("$APIKEY", token)
-          .replace("$SYMBOL", trade.getSymbol())
-          .replace("$STARTDATE", trade.getPurchaseDate().toString())
-          .replace("$ENDDATE", endDate.toString());
+      String url = uri.replace("$APIKEY", token).replace("$SYMBOL", trade.getSymbol())
+          .replace("$STARTDATE", trade.getPurchaseDate()
+          .toString()).replace("$ENDDATE", endDate.toString());
       TiingoCandle[] tiingoCandles = new RestTemplate()
           .getForObject(url, TiingoCandle[].class);
       return new TotalReturnsDto(trade.getSymbol(),
           Stream.of(tiingoCandles).filter(candle -> candle.getDate()
           .equals(endDate)).findFirst().get().getClose());
     }).sorted(Comparator.comparing(TotalReturnsDto::getClosingPrice))
-        .map(TotalReturnsDto::getSymbol)
-        .collect(Collectors.toList());
+      .map(TotalReturnsDto::getSymbol)
+      .collect(Collectors.toList());
 
   }
 
