@@ -1,5 +1,12 @@
 package com.crio.warmup.stock;
 
+import com.crio.warmup.stock.dto.PortfolioTrade;
+import com.crio.warmup.stock.dto.TiingoCandle;
+import com.crio.warmup.stock.dto.TotalReturnsDto;
+import com.crio.warmup.stock.log.UncaughtExceptionHandler;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -13,13 +20,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import com.crio.warmup.stock.dto.PortfolioTrade;
-import com.crio.warmup.stock.dto.TiingoCandle;
-import com.crio.warmup.stock.dto.TotalReturnsDto;
-import com.crio.warmup.stock.log.UncaughtExceptionHandler;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import java.util.stream.Stream;
 import org.apache.logging.log4j.ThreadContext;
 import org.springframework.web.client.RestTemplate;
