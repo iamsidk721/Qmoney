@@ -162,10 +162,6 @@ public class PortfolioManagerApplication {
     String uri = "https://api.tiingo.com/tiingo/daily/$SYMBOL/prices?startDate=$STARTDATE&endDate=$ENDDATE&token=$APIKEY";
 
     totalReturnsDtoList = new ArrayList<TotalReturnsDto>();
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/master
     for (PortfolioTrade portfolioTrade : portfolioTrades) {
       String url = uri.replace("$APIKEY", token)
           .replace("$SYMBOL", portfolioTrade.getSymbol())
