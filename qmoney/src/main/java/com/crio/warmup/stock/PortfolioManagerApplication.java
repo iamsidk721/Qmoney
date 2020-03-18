@@ -5,9 +5,10 @@ import com.crio.warmup.stock.dto.PortfolioTrade;
 import com.crio.warmup.stock.dto.TiingoCandle;
 import com.crio.warmup.stock.dto.TotalReturnsDto;
 import com.crio.warmup.stock.log.UncaughtExceptionHandler;
+import com.crio.warmup.stock.portfolio.PortfolioManager;
+import com.crio.warmup.stock.portfolio.PortfolioManagerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -158,7 +159,7 @@ public class PortfolioManagerApplication {
     ObjectMapper objectMapper = getObjectMapper();
     PortfolioTrade[] portfolioTrades = objectMapper.readValue(byteArray, PortfolioTrade[].class);
 
-    String token = "fa8fe0868cd058391fca9559e930a134b47c87ef";
+    String token = "6faa2e1128f05418ad921dacadab473742c99350";
     String uri = "https://api.tiingo.com/tiingo/daily/$SYMBOL/prices?startDate=$STARTDATE&endDate=$ENDDATE&token=$APIKEY";
 
     totalReturnsDtoList = new ArrayList<TotalReturnsDto>();
@@ -202,11 +203,6 @@ public class PortfolioManagerApplication {
   //  startDate and endDate are already calculated in module2
   //  using the function you just wrote #calculateAnnualizedReturns
   //  Return the list of AnnualizedReturns sorted by annualizedReturns in descending order.
-  //  use gralde command like below to test your code
-  //  ./gradlew run --args="trades.json 2020-01-01"
-  //  ./gradlew run --args="trades.json 2019-07-01"
-  //  ./gradlew run --args="trades.json 2019-12-03"
-  //  where trades.json is your json file
 
   public static List<AnnualizedReturn> mainCalculateSingleReturn(String[] args)
       throws IOException, URISyntaxException {
@@ -216,7 +212,7 @@ public class PortfolioManagerApplication {
     ObjectMapper objectMapper = getObjectMapper();
     PortfolioTrade[] portfolioTrades = objectMapper.readValue(byteArray, PortfolioTrade[].class);
 
-    String token = "fa8fe0868cd058391fca9559e930a134b47c87ef";
+    String token = "6faa2e1128f05418ad921dacadab473742c99350";
     String uri = "https://api.tiingo.com/tiingo/daily/$SYMBOL/"
            + "prices?startDate=$STARTDATE&endDate=$ENDDATE&token=$APIKEY";
 
@@ -271,12 +267,25 @@ public class PortfolioManagerApplication {
 
 
 
+  //  Confirm that you are getting same results as in Module3.
+
+  public static List<AnnualizedReturn> mainCalculateReturnsAfterRefactor(String[] args)
+        throws Exception {
+    File file = resolveFileFromResources(args[0]);
+    LocalDate endDate = LocalDate.parse(args[1]);
+    byte[] byteArray = Files.readAllBytes(file.toPath());
+    ObjectMapper objectMapper = getObjectMapper();
+    PortfolioTrade[] portfolioTrades = objectMapper.readValue(byteArray, PortfolioTrade[].class);
+    PortfolioManager portfolioManager = PortfolioManagerFactory
+        .getPortfolioManager(new RestTemplate());
+    return portfolioManager.calculateAnnualizedReturn(Arrays.asList(portfolioTrades), endDate);
+  }
+
 
   public static void main(String[] args) throws Exception {
     Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
     ThreadContext.put("runId", UUID.randomUUID().toString());
-    printJsonObject(mainCalculateSingleReturn(args));
-
+    printJsonObject(mainCalculateReturnsAfterRefactor(args));
   }
 }
 
